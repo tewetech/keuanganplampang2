@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/keuanganplampang2/refs/heads/main/favicon-uang.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Keuangan Plampang 2</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ================================================= */
+        /* === Variabel dan Gaya Dasar Tema (DIADOPSI DARI TEMA.HTML) === */
+        /* ================================================= */
+        :root {
+            /* Warna Dasar */
+            --bg-primary: #f0f0f5; 
+            --bg-card: rgba(255, 255, 255, 0.5); 
+            --text-main: #333333; 
+            --text-subtle: #666666; 
+            --accent-1: #08978b; /* Primer/Simpan (Hijau Teal) */
+            --accent-2: #ff6932; /* Hapus (Oranye) */
+            --accent-3: #08978B; /* Tab Aktif/Edit/Salin (Sama dengan accent-1) */
+            --border-color: rgba(0, 0, 0, 0.1); 
+            
+            /* Dimensi - Diperkecil (sesuai tema.html) */
+            --glass-br: 8px; 
+            --font-size-base: 0.75rem; 
+            --padding-base: 0.6em; 
+
+            /* Shadow & Warna Aksi */
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --color-delete: var(--accent-2); 
+            --color-save: var(--accent-1); 
+            --color-copy: var(--accent-3); 
+            --color-edit: var(--accent-3); 
+        }
+
+        /* --- Gaya Umum untuk body --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 1em; /* Dari 1.5em */
+            font-size: var(--font-size-base); 
+        }
+        
+        /* --- Kontainer utama (glass-card) --- */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(6px) saturate(180%); 
+            -webkit-backdrop-filter: blur(6px) saturate(180%);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 3px 9px var(--shadow-light); 
+            padding: 1em; 
+            border-radius: var(--glass-br);
+        }
+
+        /* --- Kontainer Utama untuk batasan lebar (main-container) --- */
+        .main-container {
+            max-width: 540px; /* Lebar diperkecil sesuai tema.html */
+            margin-left: auto;
+            margin-right: auto;
+            space-y: 0.8em; 
+        }
+        
+        /* --- Tombol Aksi Utama (btn-primary - untuk tombol Tambah Baru) --- */
+        .btn-primary {
+            background-color: var(--color-save); 
+            color: white;
+            font-weight: 600;
+            border-radius: 5px; 
+            padding: 0.5rem 1rem; 
+            font-size: 0.8rem; 
+            box-shadow: 0 1px 4px rgba(8, 151, 139, 0.3); 
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #046c63; 
+            transform: translateY(-1px);
+        }
+        
+        /* === Gaya Tombol Hapus (btn-delete - untuk Modal Hapus) === */
+        .btn-delete {
+            background-color: var(--color-delete); 
+            color: white;
+            font-weight: 600;
+            border-radius: 5px; 
+            box-shadow: 0 1px 4px rgba(255, 105, 50, 0.3); 
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn-delete:hover:not(:disabled) {
+            background-color: #e04a1f; 
+            transform: translateY(-1px);
+        }
+
+        /* --- Tombol Aksi Tabel (Edit/Hapus/Simpan/Batal Inline) --- */
+        .btn-table-action {
+            /* Membuat tombol lebih kecil dan merata (DIADOPSI DARI TEMA.HTML) */
+            font-size: 0.7rem; 
+            padding: 0.3rem; 
+            width: 1.6rem; 
+            height: 1.6rem; 
+            border-radius: 3px; 
+            color: white; 
+            display: inline-flex; 
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        /* --- Gaya Input dan Select (Diambil dari input[type="text"] tema.html) --- */
+        .gaya-input-theme {
+            border: 1px solid var(--border-color);
+            border-radius: 5px; 
+            padding: 0.5rem; 
+            font-size: 0.75rem; /* Disesuaikan agar lebih kecil/padat */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            background-color: #fcfcfc;
+        }
+
+        /* --- Gaya Tabel (DIADOPSI DARI TEMA.HTML) --- */
+        .data-table thead th {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-subtle);
+            font-weight: 600;
+            font-size: 0.7rem; 
+            padding: 0.5rem 0.6rem; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            background-color: white; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+        }
+        .data-table tbody td {
+            padding: 0.5rem 0.6rem; 
+            font-size: 0.75rem; 
+            vertical-align: middle; 
+            color: var(--text-main); 
+        }
+        /* Mengganti baris ganjil/genap dengan gaya default agar lebih bersih */
+        .data-table tbody tr:nth-child(odd) { background-color: white; }
+        .data-table tbody tr:nth-child(even) { background-color: var(--bg-primary); }
+        .data-table tbody tr:hover { background-color: #e3f2fd; }
+
+        /* --- Gaya Scrollable Data (DIADOPSI DARI TEMA.HTML) --- */
+        .scrollable-data {
+            max-height: 400px; /* Disesuaikan sedikit lebih tinggi */
+            overflow-y: auto; 
+            border: 1px solid var(--border-color);
+            border-radius: var(--glass-br);
+        }
+
+        /* --- Gaya Tombol Bulan (Didasarkan pada .tab-button tema.html) --- */
+        .btn-month-theme {
+            padding: 0.4rem 0.6rem; 
+            font-weight: 500; 
+            border-radius: 5px; 
+            color: var(--text-subtle);
+            font-size: 0.75rem; 
+            transition: all 0.2s ease;
+            background-color: #e0e0e0; 
+            border: 1px solid var(--border-color);
+        }
+        .btn-month-theme:hover { 
+            background-color: #ccc; 
+            color: var(--text-main); 
+            transform: translateY(-1px);
+        }
+        .btn-month-theme.aktif {
+            background-color: var(--accent-1); 
+            color: white;
+            border-color: var(--accent-1);
+            box-shadow: 0 1px 4px rgba(8, 151, 139, 0.3); 
+        }
+        .btn-month-theme.aktif:hover {
+            background-color: var(--accent-1); 
+            color: white;
+        }
+
+        /* --- Gaya Modal (DIADOPSI DARI TEMA.HTML) --- */
+        .modal {
+            transition: all 0.3s ease-out;
+            opacity: 0;
+            pointer-events: none;
+            display: flex; 
+        }
+        .modal-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 10px; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 1.2em; 
+            transform: translateY(-15px); 
+            transition: transform 0.3s ease-out;
+        }
+        .modal-open .modal-content {
+            transform: translateY(0);
+        }
+
+        /* --- Gaya Baris Input/Edit --- */
+        #baris-input-baru {
+            background-color: #e6fffb !important; /* Warna latar belakang tema: Minty */
+        }
+        .baris-edit-aktif {
+            background-color: #fffbe6 !important; /* Warna latar belakang tema: Kuning lembut */
+        }
+        
+        /* KOMENTAR: Gaya tambahan untuk menyembunyikan Kolom ID Transaksi */
+        .hidden-ts-col {
+            display: none;
+        }
+
+        /* --- Gaya untuk Tombol yang Terkunci --- */
+        .locked-action {
+            /* Warna yang lebih kusam dan kursor disabled */
+            background-color: #9ca3af !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container mx-auto p-4 space-y-4"> 
+        <header class="text-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-[var(--accent-1)]">
+                <i class="fas fa-chart-line mr-2"></i> KEUANGAN 2025
+            </h1>
+            <p class="text-[var(--text-subtle)] mt-1 font-['JetBrains_Mono',_monospace] text-xs">
+                Catatan Keuangan Pemuda Plampang 2 - Tewe Tech
+            </p>
+        </header>
+
+        <div class="glass-card p-3 mb-2 text-center text-xs font-bold font-['JetBrains_Mono',_monospace]">
+            <span id="adminStatus" class="text-red-600">
+                <i class="fas fa-lock mr-1"></i> MODE ADMIN NONAKTIF
+            </span>
+            <button onclick="showAdminModal()" id="toggleAdminBtn" class="ml-2 py-0.5 px-2 text-xs rounded-full bg-gray-200 hover:bg-gray-300 transition duration-150">
+                <i class="fas fa-key mr-1"></i> Aktifkan
+            </button>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <div class="mb-4">
+                <p class="text-sm font-bold text-[var(--text-main)] mb-2">
+                    <i class="fas fa-calendar-check mr-2"></i> Pilih Bulan:
+                </p>
+                <div id="filterBulanContainer" class="grid grid-cols-6 sm:grid-cols-12 gap-1.5">
+                    </div>
+            </div>
+
+            <div id="kartuSaldo" class="glass-card p-4 rounded-xl shadow-inner text-center transition duration-300">
+                <p class="text-xs opacity-90 font-['JetBrains_Mono',_monospace] text-gray-500">SALDO AKHIR BULAN INI:</p>
+                <p id="akhirSaldo" class="text-3xl font-extrabold mt-1 font-['JetBrains_Mono',_monospace] text-gray-500">Rp 0</p>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 overflow-x-auto relative">
+            
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg md:text-xl font-semibold text-[var(--text-main)]">
+                    <i class="fas fa-receipt mr-2"></i> Rincian Transaksi
+                </h2>
+                <button 
+                    id="tombolTambahBaru" 
+                    class="btn-primary rounded-full flex items-center justify-center transform transition duration-200 locked-action" 
+                    title="Aktifkan Mode Admin untuk Tambah Baru"
+                    style="width: 40px; height: 40px; font-size: 1rem; padding: 0;"
+                    onclick="checkAdminStatus(addRowToTable)"
+                >
+                    <i class="fas fa-plus-circle"></i>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto scrollable-data shadow-inner bg-white bg-opacity-80">
+                <table class="min-w-full data-table border-collapse">
+                    <thead class="sticky top-0 z-10">
+                        <tr>
+                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider hidden-ts-col">ID TRANSAKSI (TS)</th> 
+                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">TANGGAL</th>
+                            <th class="px-6 py-2 text-left text-xs uppercase tracking-wider">KETERANGAN</th>
+                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">PEMASUKAN</th>
+                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">PENGELUARAN</th>
+                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">SISA SALDO</th>
+                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">AKSI</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="tabelDataTransaksi" class="divide-y divide-[var(--border-color)]">
+                        <tr><td colspan="7" class="text-center py-4 text-[var(--text-subtle)]">Silakan pilih bulan di atas.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAdmin" class="modal fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="modal-content p-4 w-11/12 max-w-xs">
+            <h3 class="text-lg font-bold mb-3 flex items-center text-[var(--accent-3)]">
+                <i class="fas fa-user-shield mr-2"></i> Akses Administrator
+            </h3>
+            <p class="mb-3 text-[var(--text-main)] text-sm">Masukkan *password* untuk mengaktifkan mode Edit/Input.</p>
+            <input 
+                type="password" 
+                id="adminPasswordInput" 
+                placeholder="Password"
+                class="gaya-input-theme w-full mb-4" 
+                onkeypress="if(event.key === 'Enter') authenticateAdmin()"
+            >
+            <p id="passwordError" class="text-red-500 text-xs mb-3 hidden">Password salah. Coba lagi.</p>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeAdminModal()" class="bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded-md text-sm hover:bg-gray-300 transition duration-150">
+                    <i class="fas fa-times mr-1"></i> Batal
+                </button>
+                <button onclick="authenticateAdmin()" class="btn-primary text-white font-semibold py-1.5 px-3 rounded-md shadow-md hover:shadow-lg transition duration-150 ease-in-out text-sm">
+                    <i class="fas fa-key mr-1"></i> Masuk
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="lapisanMemuat" class="modal fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="modal-content p-4 w-full max-w-xs">
+            <div class="flex items-center justify-center space-x-2">
+                <svg class="animate-spin h-5 w-5 text-[var(--accent-1)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-sm font-medium text-[var(--text-main)]">Memuat Data...</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="wadahToast" class="fixed bottom-4 right-4 space-y-2 z-50">
+    </div>
+
+    <div id="modalHapus" class="modal fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="modal-content p-4 w-11/12 max-w-xs">
+            <h3 class="text-lg font-bold mb-3 flex items-center text-[var(--color-delete)]">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Konfirmasi Penghapusan
+            </h3>
+            <p id="modalPesan" class="mb-4 text-[var(--text-main)] text-sm">Anda yakin ingin menghapus transaksi ini?</p>
+            <div class="flex justify-end space-x-2">
+                <button id="tombolBatalHapus" class="bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded-md text-sm hover:bg-gray-300 transition duration-150">
+                    <i class="fas fa-times mr-1"></i> Batal
+                </button>
+                <button id="tombolKonfirmasiHapus" class="btn-delete text-white font-semibold py-1.5 px-3 rounded-md shadow-md hover:shadow-lg transition duration-150 ease-in-out text-sm">
+                    <i class="fas fa-trash-alt mr-1"></i> Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================================
+        // KONFIGURASI APLIKASI
+        // ====================================================================
+        
+        // URL DEPLOYMENT Apps Script Anda (HARAP GANTI dengan URL Anda)
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkoQPswh47R94GcTuSyU32H2Bt6Jg6Bbiojxd4aRQx91gMV_ktIOJt8-Fh3pGV0MqM/exec"; 
+
+        // DAFTAR NAMA BULAN
+        const MONTH_DATA = [
+            { full: "Januari", short: "Jan" }, { full: "Februari", short: "Feb" }, { full: "Maret", short: "Mar" }, 
+            { full: "April", short: "Apr" }, { full: "Mei", short: "Mei" }, { full: "Juni", short: "Jun" }, 
+            { full: "Juli", short: "Jul" }, { full: "Agustus", short: "Agu" }, { full: "September", short: "Sep" }, 
+            { full: "Oktober", short: "Okt" }, { full: "November", short: "Nov" }, { full: "Desember", short: "Des" }
+        ];
+        
+        // VARIABEL STATUS ADMINISTRATOR
+        const ADMIN_PASSWORD = "dataplp2";
+        let isAdmin = false;
+        let pendingAction = null; // Menyimpan fungsi yang akan dijalankan setelah autentikasi
+
+        // Variabel Status Aplikasi
+        let isEditing = false;
+        let isAddingNew = false;
+        let originalRowContent = null; 
+        let currentSelectedMonth = MONTH_DATA[new Date().getMonth()].full; 
+        let transactionIdToDelete = null; 
+        let finalBalanceValue = 0; // Nilai Saldo Akhir Bulan (diperbarui di fetchData)
+        
+        // Referensi DOM
+        const filterBulanContainer = document.getElementById('filterBulanContainer'); 
+        const tabelDataTransaksi = document.getElementById('tabelDataTransaksi');     
+        const lapisanMemuat = document.getElementById('lapisanMemuat');             
+        const akhirSaldoEl = document.getElementById('akhirSaldo');                 
+        const tombolTambahBaru = document.getElementById('tombolTambahBaru');         
+        const wadahToast = document.getElementById('wadahToast');                     
+        const modalHapus = document.getElementById('modalHapus');
+        const tombolKonfirmasiHapus = document.getElementById('tombolKonfirmasiHapus');
+        const tombolBatalHapus = document.getElementById('tombolBatalHapus');
+        
+        // DOM Admin
+        const modalAdmin = document.getElementById('modalAdmin');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const passwordError = document.getElementById('passwordError');
+        const adminStatusEl = document.getElementById('adminStatus');
+        const toggleAdminBtn = document.getElementById('toggleAdminBtn');
+
+
+        // ====================================================================
+        // FUNGSI ADMINISTRATOR
+        // ====================================================================
+
+        /** Menampilkan modal password administrator */
+        function showAdminModal() {
+            if (isAdmin) {
+                // Jika sudah aktif, nonaktifkan
+                isAdmin = false;
+                updateAdminUI();
+                showToast("Mode Administrator dinonaktifkan.", 'accent-3');
+                return;
+            }
+            // Jika belum aktif, tampilkan modal
+            adminPasswordInput.value = '';
+            passwordError.classList.add('hidden');
+            modalAdmin.classList.remove('hidden');
+            modalAdmin.classList.add('modal-open');
+            setTimeout(() => adminPasswordInput.focus(), 300);
+        }
+
+        /** Menutup modal password administrator */
+        function closeAdminModal() {
+            modalAdmin.classList.remove('modal-open');
+            modalAdmin.classList.add('hidden');
+            pendingAction = null; // Hapus aksi tertunda
+        }
+
+        /** Memeriksa password dan mengaktifkan mode Admin */
+        function authenticateAdmin() {
+            const inputPass = adminPasswordInput.value.trim();
+            if (inputPass === ADMIN_PASSWORD) {
+                isAdmin = true;
+                closeAdminModal();
+                updateAdminUI();
+                showToast("Mode Administrator berhasil diaktifkan!", 'success');
+                
+                // Jika ada aksi tertunda, jalankan
+                if (pendingAction) {
+                    // Berikan jeda sebentar agar modal sempat tertutup
+                    setTimeout(() => {
+                        pendingAction();
+                        pendingAction = null;
+                    }, 50); 
+                }
+            } else {
+                passwordError.classList.remove('hidden');
+                adminPasswordInput.value = '';
+                adminPasswordInput.focus();
+                showToast("Password salah!", 'error');
+            }
+        }
+
+        /** Memeriksa status Admin sebelum menjalankan fungsi krusial */
+        function checkAdminStatus(action, actionId = null) {
+            if (isAdmin) {
+                // Jika sudah Admin, langsung jalankan aksi
+                action(actionId);
+            } else {
+                // Jika belum Admin, simpan aksi dan tampilkan modal password
+                pendingAction = actionId ? () => action(actionId) : action;
+                showAdminModal();
+            }
+        }
+
+        /** Memperbarui tampilan UI sesuai status Admin (kunci tombol) */
+        function updateAdminUI() {
+            // 1. Tombol Tambah Baru
+            tombolTambahBaru.classList.toggle('locked-action', !isAdmin);
+            tombolTambahBaru.title = isAdmin ? "Tambah Transaksi Baru" : "Aktifkan Mode Admin untuk Tambah Baru";
+
+            // 2. Status Teks
+            if (isAdmin) {
+                adminStatusEl.innerHTML = '<i class="fas fa-lock-open mr-1"></i> MODE ADMIN AKTIF';
+                adminStatusEl.classList.remove('text-red-600');
+                adminStatusEl.classList.add('text-[var(--accent-1)]');
+                toggleAdminBtn.textContent = 'Nonaktifkan';
+                toggleAdminBtn.classList.remove('bg-gray-200');
+                toggleAdminBtn.classList.add('bg-red-400', 'text-white');
+            } else {
+                adminStatusEl.innerHTML = '<i class="fas fa-lock mr-1"></i> MODE ADMIN NONAKTIF';
+                adminStatusEl.classList.add('text-red-600');
+                adminStatusEl.classList.remove('text-[var(--accent-1)]');
+                toggleAdminBtn.textContent = 'Aktifkan';
+                toggleAdminBtn.classList.add('bg-gray-200');
+                toggleAdminBtn.classList.remove('bg-red-400', 'text-white');
+            }
+
+            // 3. Tombol Aksi di Tabel (Render ulang atau perbarui kelas)
+            const rows = tabelDataTransaksi.querySelectorAll('tr[data-id]');
+            rows.forEach(row => {
+                const editButton = row.querySelector('.btn-table-action[onclick*="startEdit"]');
+                const deleteButton = row.querySelector('.btn-table-action[onclick*="showDeleteConfirmation"]');
+
+                if (editButton) {
+                    // Ganti logika klik langsung ke checkAdminStatus
+                    editButton.onclick = () => checkAdminStatus(startEdit, row.dataset.id);
+                    editButton.classList.toggle('locked-action', !isAdmin);
+                    editButton.title = isAdmin ? "Edit Transaksi" : "Aktifkan Mode Admin untuk Edit";
+                }
+                if (deleteButton) {
+                    const id = row.dataset.id;
+                    // Ganti logika klik langsung ke checkAdminStatus
+                    deleteButton.onclick = () => checkAdminStatus(showDeleteConfirmation, id);
+                    deleteButton.classList.toggle('locked-action', !isAdmin);
+                    deleteButton.title = isAdmin ? "Hapus Transaksi" : "Aktifkan Mode Admin untuk Hapus";
+                }
+            });
+        }
+
+        // ====================================================================
+        // FUNGSI UTILITY & API CALLS
+        // ====================================================================
+
+        /** Mengirim data ke Google Apps Script */
+        async function postToGS(data, method = 'POST') {
+            let url = `${GOOGLE_APPS_SCRIPT_URL}?action=${data.action || 'READ_DATA'}`;
+            const options = {
+                method: method,
+                redirect: 'follow',
+                mode: 'cors'
+            };
+
+            const MAX_RETRIES = 3;
+            for (let i = 0; i < MAX_RETRIES; i++) {
+                try {
+                    if (method === 'POST') {
+                        const formData = new FormData();
+                        for (const key in data) {
+                            // Convert number to string for FormData (penting untuk sisa_saldo)
+                            formData.append(key, typeof data[key] === 'number' ? String(data[key]) : data[key]);
+                        }
+                        options.body = formData;
+                    } else {
+                        const params = new URLSearchParams(data);
+                        url = `${GOOGLE_APPS_SCRIPT_URL}?${params.toString()}`;
+                    }
+
+                    const response = await fetch(url, options);
+
+                    if (response.status === 429) {
+                        if (i < MAX_RETRIES - 1) {
+                            const delay = Math.pow(2, i) * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue;
+                        } else {
+                            throw new Error(`Batas percobaan habis. Server terlalu sibuk.`);
+                        }
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`Permintaan HTTP gagal dengan status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.status === 'error') {
+                        throw new Error(result.message || 'Operasi gagal di sisi server.');
+                    }
+
+                    return result;
+
+                } catch (error) {
+                    console.error("Kesalahan saat menghubungi Apps Script:", error);
+                    if (i === MAX_RETRIES - 1) {
+                        throw new Error(`Gagal memproses data setelah ${MAX_RETRIES} percobaan: ${error.message}`);
+                    }
+                }
+            }
+        }
+
+        /** Menampilkan notifikasi toast */
+        function showToast(message, type) {
+            const container = wadahToast;
+            let bgColor;
+            let icon;
+
+            if (type === 'success') {
+                bgColor = 'bg-[var(--accent-1)]';
+                icon = 'fa-check-circle';
+            } else if (type === 'accent-3') {
+                bgColor = 'bg-[#3b82f6]';
+                icon = 'fa-info-circle';
+            } else { // error
+                bgColor = 'bg-[var(--accent-2)]';
+                icon = 'fa-exclamation-circle';
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `p-2 rounded-lg shadow-xl ${bgColor} text-white transition-all transform duration-500 translate-y-2 opacity-0 flex items-center space-x-2 text-sm`;
+            toast.innerHTML = `<i class="fas ${icon} text-lg"></i> <div>
+                <p class="font-bold">${type === 'success' ? 'BERHASIL' : (type === 'accent-3' ? 'PERHATIAN' : 'GAGAL')}</p>
+                <p class="mt-0.5 text-xs">${message}</p>
+            </div>`;
+            
+            container.appendChild(toast);
+
+            // Tampilkan toast
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            // Sembunyikan dan hapus toast setelah 5 detik
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 500); 
+            }, 5000); 
+        }
+
+        /** Menampilkan atau menyembunyikan lapisan memuat */
+        function showLoading(state) {
+            lapisanMemuat.classList.toggle('hidden', !state);
+            lapisanMemuat.classList.toggle('modal-open', state);
+        }
+
+        /** Format angka menjadi format Rupiah */
+        function formatRupiah(angka) {
+            // Perbaikan: Jika angka negatif, pastikan tanda minus ikut
+            if (typeof angka !== 'number') return 'Rp 0';
+            const sign = angka < 0 ? '-' : '';
+            const absoluteAngka = Math.abs(angka);
+
+            const formatter = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            });
+            // Gabungkan tanda minus jika ada
+            return sign + formatter.format(absoluteAngka).trim();
+        }
+        
+        /** * KOMENTAR: FUNGSI BARU - Mengubah format tanggal dari YYYY-MM-DD menjadi DD Bulan YYYY (contoh: 1 Agustus 2025) 
+         * Digunakan di renderTable dan startEdit.
+         */
+        function formatDateToIndonesian(dateString) {
+            if (!dateString) return '';
+            
+            try {
+                // Mencoba untuk membuat objek Date
+                const date = new Date(dateString);
+
+                // Periksa apakah tanggal valid
+                if (isNaN(date)) {
+                    // Jika tidak valid, coba parsing manual YYYY-MM-DD
+                    const parts = dateString.match(/(\d{4})-(\d{2})-(\d{2})/);
+                    if (parts) {
+                        // Perhatikan bahwa JavaScript Date() akan memperlakukan YYYY-MM-DD sebagai UTC 
+                        // jika dibuat dengan `new Date(string)`. Solusi terbaik adalah membuat objek Date 
+                        // dengan komponen terpisah untuk menghindari pergeseran zona waktu.
+                        return new Date(parts[1], parts[2] - 1, parts[3]).toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    }
+                    return dateString; // Fallback jika parsing manual gagal
+                }
+
+                // Menggunakan Intl.DateTimeFormat untuk format lokal Indonesia
+                return date.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+            } catch (error) {
+                console.error("Gagal memformat tanggal:", error);
+                return dateString; // Kembali ke string asli jika gagal
+            }
+        }
+
+
+        /** Mengambil data dari Apps Script (DIPERBAIKI untuk mengambil initialBalance) */
+        async function fetchData() {
+            if (isEditing || isAddingNew) return; // Jangan fetch saat sedang edit/tambah
+
+            showLoading(true);
+            try {
+                // Diperlukan asumsi bahwa Apps Script akan mengembalikan initialBalance (saldo awal bulan)
+                const result = await postToGS({ action: 'READ_DATA', month: currentSelectedMonth }, 'GET');
+                
+                // --- PERBAIKAN FOKUS: Ambil Saldo Awal ---
+                const initialBalance = result.initialBalance || 0; // Asumsi server menyediakan initialBalance
+                
+                // Lanjutkan ke render tabel dengan saldo awal
+                renderTable(result.data || [], initialBalance);
+                
+                // Saldo akhir sudah dihitung di renderTable dan disimpan di finalBalanceValue
+                akhirSaldoEl.textContent = formatRupiah(finalBalanceValue);
+                
+            } catch (error) {
+                showToast(`Gagal memuat data: ${error.message}`, 'error');
+                tabelDataTransaksi.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">${error.message}</td></tr>`;
+                akhirSaldoEl.textContent = 'Rp 0';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ====================================================================
+        // FUNGSI TAMPILAN & INPUT (DIUBAH UNTUK PERBAIKAN)
+        // ====================================================================
+
+        /** Membuat elemen tombol filter bulan */
+        function createMonthButton(monthName) {
+            const btn = document.createElement('button');
+            btn.className = `btn-month-theme ${monthName === currentSelectedMonth ? 'aktif' : ''}`;
+            btn.textContent = monthName.substring(0, 3);
+            btn.setAttribute('data-month', monthName);
+            btn.onclick = () => selectMonth(monthName);
+            return btn;
+        }
+
+        /** Mengubah bulan yang dipilih */
+        function selectMonth(monthName) {
+            if (isEditing || isAddingNew) {
+                showToast("Selesaikan aksi Edit/Tambah terlebih dahulu.", 'accent-3');
+                return;
+            }
+            if (currentSelectedMonth === monthName) return;
+
+            currentSelectedMonth = monthName;
+            
+            // Perbarui tampilan tombol
+            document.querySelectorAll('.btn-month-theme').forEach(btn => {
+                btn.classList.toggle('aktif', btn.getAttribute('data-month') === monthName);
+            });
+
+            fetchData();
+        }
+
+        /** Render data ke tabel HTML (DIPERBAIKI untuk menampilkan tanggal format Indonesia) */
+        function renderTable(data, initialBalance) {
+            tabelDataTransaksi.innerHTML = ''; // Kosongkan tabel
+            
+            let currentBalance = initialBalance; // Mulai dari saldo awal bulan
+
+            if (data.length === 0) {
+                tabelDataTransaksi.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-[var(--text-subtle)]">Tidak ada data transaksi di bulan ini.</td></tr>`;
+                // Jika data kosong, saldo akhir adalah saldo awal
+                finalBalanceValue = initialBalance; 
+                updateAdminUI(); // Perbarui UI admin (kunci tombol)
+                return;
+            }
+
+            data.forEach(rowData => {
+                // Skema data: [id, tanggal, keterangan, pemasukan, pengeluaran]
+                // Kolom saldo (indeks 5) dari data lama diabaikan karena akan dihitung ulang
+                const [id, tanggalYMD, keterangan, pemasukanText, pengeluaranText] = rowData;
+                
+                // Pastikan nilai Pemasukan/Pengeluaran adalah angka
+                const pemasukan = parseFloat(pemasukanText) || 0;
+                const pengeluaran = parseFloat(pengeluaranText) || 0;
+
+                // --- PERBAIKAN FOKUS: Hitung Saldo Baris ---
+                currentBalance = currentBalance + pemasukan - pengeluaran;
+
+                // --- PERBAIKAN FOKUS: Format Tanggal untuk Tampilan ---
+                const formattedDate = formatDateToIndonesian(tanggalYMD);
+
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-id', id);
+                newRow.innerHTML = `
+                    <td class="data-cell p-1 hidden-ts-col">${id}</td>
+                    <td class="data-cell p-1">${formattedDate}</td> <td class="data-cell p-1">${keterangan}</td>
+                    <td class="data-cell p-1 text-right text-[var(--accent-1)] font-['JetBrains_Mono',_monospace]">${formatRupiah(pemasukan)}</td>
+                    <td class="data-cell p-1 text-right text-[var(--accent-2)] font-['JetBrains_Mono',_monospace]">${formatRupiah(pengeluaran)}</td>
+                    <td class="data-cell p-1 text-right font-bold font-['JetBrains_Mono',_monospace]">${formatRupiah(currentBalance)}</td>
+                    <td class="data-cell p-1 text-center whitespace-nowrap">
+                        <button onclick="checkAdminStatus(startEdit, '${id}')" class="btn-table-action bg-[var(--color-edit)] hover:bg-[#077d73] mr-1 locked-action" title="Aktifkan Mode Admin untuk Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="checkAdminStatus(showDeleteConfirmation, '${id}')" class="btn-table-action bg-[var(--color-delete)] hover:bg-[#e04a1f] locked-action" title="Aktifkan Mode Admin untuk Hapus">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                tabelDataTransaksi.appendChild(newRow);
+            });
+            
+            // --- PERBAIKAN FOKUS: Simpan Saldo Akhir ---
+            finalBalanceValue = currentBalance; 
+
+            // Pastikan UI admin diperbarui setelah render
+            updateAdminUI(); 
+        }
+
+        /** Membuat baris input/edit */
+        function createInputRow(rowData = null) {
+            const isEdit = rowData !== null;
+            
+            // Jika edit, ambil data dari rowData: [timestamp, tanggal, keterangan, pemasukan, pengeluaran, id]
+            // Jika tambah baru, gunakan nilai default
+            const id = isEdit ? rowData[5] : new Date().getTime(); 
+            // Tanggal input selalu format YYYY-MM-DD
+            const tanggalVal = isEdit ? rowData[1] : new Date().toISOString().substring(0, 10); 
+            const keteranganVal = isEdit ? rowData[2] : '';
+            const pemasukanVal = isEdit ? rowData[3] : '';
+            const pengeluaranVal = isEdit ? rowData[4] : '';
+            
+            const action = isEdit ? `updateData('${id}')` : 'saveNewData()';
+            const inputRow = document.createElement('tr');
+            inputRow.id = isEdit ? `edit-row-${id}` : 'baris-input-baru';
+            inputRow.className = isEdit ? 'baris-edit-aktif' : '';
+
+            // Perhatikan ID input menggunakan ID Transaksi (timestamp) agar unik: inputTanggal${id}
+            inputRow.innerHTML = `
+                <td class="data-cell p-1 hidden-ts-col">${id}</td>
+                <td class="data-cell p-1">
+                    <input type="date" value="${tanggalVal}" class="gaya-input-theme w-full" id="inputTanggal${id}" required>
+                </td>
+                <td class="data-cell p-1">
+                    <input type="text" value="${keteranganVal}" placeholder="Keterangan transaksi..." class="gaya-input-theme w-full" id="inputKeterangan${id}" required>
+                </td>
+                <td class="data-cell p-1">
+                    <input type="number" value="${pemasukanVal}" placeholder="0" class="gaya-input-theme w-full text-right" id="inputPemasukan${id}" min="0">
+                </td>
+                <td class="data-cell p-1">
+                    <input type="number" value="${pengeluaranVal}" placeholder="0" class="gaya-input-theme w-full text-right" id="inputPengeluaran${id}" min="0">
+                </td>
+                <td class="data-cell p-1 font-bold text-center">
+                    -
+                </td>
+                <td class="data-cell p-1 text-center whitespace-nowrap">
+                    <button onclick="${action}" class="btn-table-action bg-[var(--accent-1)] hover:bg-[#046c63] mr-1" title="${isEdit ? 'Simpan Perubahan' : 'Simpan Transaksi'}">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button onclick="cancelAction()" class="btn-table-action bg-gray-500 hover:bg-gray-600" title="Batal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+            
+            return inputRow;
+        }
+
+        /** Mengganti baris tabel dengan form input saat Edit (DIPERBAIKI untuk parsing tanggal) */
+        function startEdit(id) {
+            if (isEditing || isAddingNew) {
+                showToast("Selesaikan aksi yang sedang berlangsung terlebih dahulu.", 'accent-3');
+                return;
+            }
+
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            if (!row) return;
+
+            // Pastikan bukan baris input baru 
+            if (row.id === 'baris-input-baru') return; 
+
+            const cells = row.querySelectorAll('.data-cell');
+            
+            // Ambil data dari sel
+            const timestamp = cells[0].textContent.trim();
+            const tanggalIndo = cells[1].textContent.trim(); // Format DD Bulan YYYY
+            const keterangan = cells[2].textContent.trim();
+            const pemasukanText = cells[3].textContent.trim(); // Format Rupiah
+            const pengeluaranText = cells[4].textContent.trim(); // Format Rupiah
+            
+            // FUNGSI UTILITY LOKAL
+            // --- PERBAIKAN FOKUS: Parsing balik tanggal dari DD Bulan YYYY ke YYYY-MM-DD ---
+            const convertIndoToYMD = (indoDate) => {
+                try {
+                    // Coba buat objek Date dengan format ID
+                    const date = new Date(indoDate.replace(/(\d{1,2})\s+(\w+)\s+(\d{4})/, '$2 $1, $3'));
+                    if (isNaN(date)) return new Date().toISOString().substring(0, 10);
+
+                    // Konversi ke format YYYY-MM-DD yang dibutuhkan oleh input type="date"
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+
+                } catch (e) {
+                    return new Date().toISOString().substring(0, 10); // Fallback ke tanggal hari ini YYYY-MM-DD
+                }
+            };
+
+
+            // Mengatasi parsing angka Rupiah (Rp1.000.000)
+            const unformatRupiah = (text) => {
+                if (!text) return '';
+                // Hapus 'Rp', spasi, tanda minus, dan semua titik/koma (separator ribuan)
+                let cleanText = String(text).replace(/Rp\s*/g, '').replace(/[\.,]/g, '').replace(/-/g, '').trim();
+                // Menggunakan parseFloat dan fallback ke string kosong 
+                const num = parseFloat(cleanText);
+                return isNaN(num) ? '' : num;
+            };
+            
+            // Data yang akan dikirim ke createInputRow
+            // --- PERBAIKAN FOKUS: Gunakan fungsi konversi balik tanggal ---
+            const tanggalInput = convertIndoToYMD(tanggalIndo); // YYYY-MM-DD format untuk input type="date"
+
+            // Perhatikan bahwa data ke-5 (saldo) diabaikan dari data edit, 
+            // karena tidak digunakan dalam form input.
+            const rowDataForEdit = [
+                timestamp, 
+                tanggalInput, 
+                keterangan, 
+                unformatRupiah(pemasukanText), // Nilai numerik tanpa format
+                unformatRupiah(pengeluaranText), // Nilai numerik tanpa format
+                id // Transaction ID
+            ];
+
+            // Simpan baris asli
+            originalRowContent = row.cloneNode(true);
+
+            // Ganti baris dengan input form
+            const inputRow = createInputRow(rowDataForEdit);
+            row.replaceWith(inputRow);
+
+            isEditing = true;
+            // Focus ke input pertama (Tanggal)
+            document.getElementById(`inputTanggal${id}`).focus();
+        }
+
+        /** Menambahkan baris kosong untuk input data baru */
+        function addRowToTable() {
+            if (isEditing || isAddingNew) {
+                showToast("Selesaikan aksi yang sedang berlangsung terlebih dahulu.", 'accent-3');
+                return;
+            }
+
+            // Cek apakah tabel kosong (ada baris placeholder)
+            const firstRow = tabelDataTransaksi.querySelector('tr');
+            if (firstRow && firstRow.cells.length === 1 && firstRow.textContent.includes('Silakan pilih bulan')) {
+                 tabelDataTransaksi.innerHTML = ''; // Hapus baris placeholder
+            }
+
+            const inputRow = createInputRow(null); // Data null = tambah baru
+            
+            // Tambahkan baris baru di paling atas
+            tabelDataTransaksi.prepend(inputRow);
+            
+            isAddingNew = true;
+            // Focus ke input pertama (Tanggal)
+            document.getElementById('inputTanggal' + new Date().getTime()).focus();
+        }
+
+        /** Membatalkan aksi Edit/Tambah Baru */
+        function cancelAction() {
+            if (isEditing) {
+                const editRow = document.getElementById(`edit-row-${originalRowContent.dataset.id}`);
+                if (editRow) {
+                    editRow.replaceWith(originalRowContent);
+                    // Setelah pembatalan edit, pastikan tombol aksi diperbarui
+                    updateAdminUI(); 
+                }
+                isEditing = false;
+                originalRowContent = null;
+            } else if (isAddingNew) {
+                const newRow = document.getElementById('baris-input-baru');
+                if (newRow) {
+                    newRow.remove();
+                }
+                isAddingNew = false;
+                // Jika setelah batal tabel kosong, tampilkan placeholder
+                if (tabelDataTransaksi.children.length === 0) {
+                     tabelDataTransaksi.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-[var(--text-subtle)]">Tidak ada data transaksi di bulan ini.</td></tr>`;
+                }
+            }
+        }
+
+        /** Mempersiapkan data untuk disimpan saat EDIT */
+        function getEditRowData(id) {
+            const tanggal = document.getElementById(`inputTanggal${id}`).value;
+            const keterangan = document.getElementById(`inputKeterangan${id}`).value;
+            const pemasukan = document.getElementById(`inputPemasukan${id}`).value;
+            const pengeluaran = document.getElementById(`inputPengeluaran${id}`).value;
+
+            // Validasi Sederhana
+            if (!tanggal || !keterangan) {
+                showToast("Tanggal dan Keterangan wajib diisi.", 'error');
+                return null;
+            }
+
+            // Pastikan minimal salah satu Pemasukan/Pengeluaran terisi
+            if (!pemasukan && !pengeluaran) {
+                showToast("Setidaknya isi nilai Pemasukan atau Pengeluaran.", 'error');
+                return null;
+            }
+
+            return {
+                action: 'UPDATE_TRANSACTION',
+                id: id,
+                month: currentSelectedMonth,
+                tanggal: tanggal, // Tanggal dikirim dalam format YYYY-MM-DD
+                pemasukan: parseFloat(pemasukan) || 0,
+                pengeluaran: parseFloat(pengeluaran) || 0,
+                keterangan: keterangan, // Keterangan dipindah ke akhir
+            };
+        }
+
+        /** Mempersiapkan data untuk disimpan saat TAMBAH BARU */
+        function getNewRowData() {
+            const id = document.getElementById('baris-input-baru').querySelector('td.hidden-ts-col').textContent.trim();
+            const tanggal = document.getElementById(`inputTanggal${id}`).value;
+            const keterangan = document.getElementById(`inputKeterangan${id}`).value;
+            const pemasukan = document.getElementById(`inputPemasukan${id}`).value;
+            const pengeluaran = document.getElementById(`inputPengeluaran${id}`).value;
+
+            // Validasi Sederhana
+            if (!tanggal || !keterangan) {
+                showToast("Tanggal dan Keterangan wajib diisi.", 'error');
+                return null;
+            }
+
+            // Pastikan minimal salah satu Pemasukan/Pengeluaran terisi
+            if (!pemasukan && !pengeluaran) {
+                showToast("Setidaknya isi nilai Pemasukan atau Pengeluaran.", 'error');
+                return null;
+            }
+
+            return {
+                action: 'ADD_TRANSACTION',
+                id: id,
+                month: currentSelectedMonth,
+                tanggal: tanggal, // Tanggal dikirim dalam format YYYY-MM-DD
+                pemasukan: parseFloat(pemasukan) || 0,
+                pengeluaran: parseFloat(pengeluaran) || 0,
+                keterangan: keterangan, // Keterangan dipindah ke akhir
+            };
+        }
+
+        /** FUNGSI KRUSIAL: Menyimpan data yang sudah diedit ke Apps Script */
+        async function updateData(id) {
+            const data = getEditRowData(id);
+            if (!data) return;
+
+            showLoading(true);
+            try {
+                await postToGS(data);
+                showToast(`Transaksi ID ${id} berhasil diperbarui.`, 'success');
+                cancelAction(); // Batalkan form input edit
+                fetchData(); // Muat ulang data untuk menampilkan saldo yang diperbarui
+            } catch (error) {
+                showToast(`Gagal memperbarui data: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        /** FUNGSI KRUSIAL: Menyimpan data baru ke Apps Script */
+        async function saveNewData() {
+            const data = getNewRowData();
+            if (!data) return;
+
+            showLoading(true);
+            try {
+                await postToGS(data);
+                showToast('Transaksi baru berhasil ditambahkan.', 'success');
+                cancelAction(); // Batalkan form input baru
+                fetchData(); // Muat ulang data untuk menampilkan saldo yang diperbarui
+            } catch (error) {
+                showToast(`Gagal menyimpan data: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        /** Menampilkan modal konfirmasi hapus */
+        function showDeleteConfirmation(id) {
+            if (isEditing || isAddingNew) {
+                showToast("Selesaikan aksi yang sedang berlangsung terlebih dahulu.", 'accent-3');
+                return;
+            }
+            transactionIdToDelete = id;
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            // Ambil keterangan dari sel (indeks 2)
+            const keterangan = row ? row.cells[2].textContent.trim() : 'Transaksi ini';
+            
+            document.getElementById('modalPesan').textContent = `Anda yakin ingin menghapus transaksi "${keterangan}" (ID: ${id})?`;
+            modalHapus.classList.remove('hidden');
+            modalHapus.classList.add('modal-open');
+        }
+
+        /** Menghapus transaksi (FUNGSI KRUSIAL) */
+        async function deleteTransaction() {
+            if (!transactionIdToDelete) return;
+
+            // Tutup modal dan tampilkan loading
+            modalHapus.classList.remove('modal-open');
+            modalHapus.classList.add('hidden');
+            showLoading(true);
+
+            try {
+                await postToGS({ action: 'DELETE_TRANSACTION', id: transactionIdToDelete, month: currentSelectedMonth });
+                showToast(`Transaksi ID ${transactionIdToDelete} berhasil dihapus.`, 'success');
+                fetchData(); // Muat ulang data untuk menampilkan saldo yang diperbarui
+            } catch (error) {
+                showToast(`Gagal menghapus data: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+                transactionIdToDelete = null; 
+            }
+        }
+
+        // ====================================================================
+        // INISIALISASI
+        // ====================================================================
+
+        /** Inisialisasi awal saat dokumen dimuat */
+        function initialize() {
+            // 1. Render Tombol Bulan
+            MONTH_DATA.forEach(month => {
+                filterBulanContainer.appendChild(createMonthButton(month.full));
+            });
+
+            // 2. Set event listener untuk konfirmasi hapus
+            tombolKonfirmasiHapus.onclick = deleteTransaction;
+            tombolBatalHapus.onclick = () => {
+                modalHapus.classList.remove('modal-open');
+                modalHapus.classList.add('hidden');
+                transactionIdToDelete = null;
+            };
+
+            // 3. Muat data untuk bulan yang sedang berjalan
+            fetchData();
+            
+            // 4. Update UI Admin Awal
+            updateAdminUI();
+        }
+
+        // Jalankan inisialisasi setelah DOM dimuat
+        document.addEventListener('DOMContentLoaded', initialize);
+        
+        // Expose fungsi ke scope global agar bisa diakses dari atribut onclick di HTML
+        window.checkAdminStatus = checkAdminStatus;
+        window.startEdit = startEdit;
+        window.showDeleteConfirmation = showDeleteConfirmation;
+        window.showAdminModal = showAdminModal;
+        window.closeAdminModal = closeAdminModal;
+        window.authenticateAdmin = authenticateAdmin;
+        window.addRowToTable = addRowToTable;
+        window.cancelAction = cancelAction;
+        window.updateData = updateData; 
+        window.saveNewData = saveNewData; 
+        // Ekspos fungsi baru (opsional, tapi baik untuk debugging)
+        window.formatDateToIndonesian = formatDateToIndonesian; 
+
+    </script>
+</body>
+</html>

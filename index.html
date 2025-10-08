@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -273,15 +274,26 @@
                 <h2 class="text-lg md:text-xl font-semibold text-[var(--text-main)]">
                     <i class="fas fa-receipt mr-2"></i> Rincian Transaksi
                 </h2>
-                <button 
-                    id="tombolTambahBaru" 
-                    class="btn-primary rounded-full flex items-center justify-center transform transition duration-200 locked-action" 
-                    title="Aktifkan Mode Admin untuk Tambah Baru"
-                    style="width: 40px; height: 40px; font-size: 1rem; padding: 0;"
-                    onclick="checkAdminStatus(addRowToTable)"
-                >
-                    <i class="fas fa-plus-circle"></i>
-                </button>
+                <div class="flex space-x-2">
+                    <button 
+                        id="tombolSimpanCsv" 
+                        class="btn-primary flex items-center justify-center text-xs rounded-full transform transition duration-200"
+                        style="width: 40px; height: 40px; font-size: 0.8rem; padding: 0;"
+                        title="Simpan Data Transaksi Bulan Ini ke CSV"
+                        onclick="exportToCSV()"
+                    >
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button 
+                        id="tombolTambahBaru" 
+                        class="btn-primary rounded-full flex items-center justify-center transform transition duration-200 locked-action" 
+                        title="Aktifkan Mode Admin untuk Tambah Baru"
+                        style="width: 40px; height: 40px; font-size: 1rem; padding: 0;"
+                        onclick="checkAdminStatus(addRowToTable)"
+                    >
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="overflow-x-auto scrollable-data shadow-inner bg-white bg-opacity-80">
@@ -329,7 +341,6 @@
             </div>
         </div>
     </div>
-
 
     <div id="lapisanMemuat" class="modal fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="modal-content p-4 w-full max-w-xs">
@@ -402,13 +413,14 @@
         const modalHapus = document.getElementById('modalHapus');
         const tombolKonfirmasiHapus = document.getElementById('tombolKonfirmasiHapus');
         const tombolBatalHapus = document.getElementById('tombolBatalHapus');
-        
         // DOM Admin
         const modalAdmin = document.getElementById('modalAdmin');
         const adminPasswordInput = document.getElementById('adminPasswordInput');
         const passwordError = document.getElementById('passwordError');
         const adminStatusEl = document.getElementById('adminStatus');
         const toggleAdminBtn = document.getElementById('toggleAdminBtn');
+        // DOM Tambahan untuk Export CSV
+        const tombolSimpanCsv = document.getElementById('tombolSimpanCsv'); 
 
 
         // ====================================================================
@@ -644,9 +656,7 @@
             return sign + formatter.format(absoluteAngka).trim();
         }
         
-        /** * KOMENTAR: FUNGSI BARU - Mengubah format tanggal dari YYYY-MM-DD menjadi DD Bulan YYYY (contoh: 1 Agustus 2025) 
-         * Digunakan di renderTable dan startEdit.
-         */
+        /** Mengubah format tanggal dari YYYY-MM-DD menjadi DD Bulan YYYY (contoh: 1 Agustus 2025) */
         function formatDateToIndonesian(dateString) {
             if (!dateString) return '';
             
@@ -659,9 +669,7 @@
                     // Jika tidak valid, coba parsing manual YYYY-MM-DD
                     const parts = dateString.match(/(\d{4})-(\d{2})-(\d{2})/);
                     if (parts) {
-                        // Perhatikan bahwa JavaScript Date() akan memperlakukan YYYY-MM-DD sebagai UTC 
-                        // jika dibuat dengan `new Date(string)`. Solusi terbaik adalah membuat objek Date 
-                        // dengan komponen terpisah untuk menghindari pergeseran zona waktu.
+                        // Membuat objek Date dengan komponen terpisah untuk menghindari pergeseran zona waktu
                         return new Date(parts[1], parts[2] - 1, parts[3]).toLocaleDateString('id-ID', {
                             day: 'numeric',
                             month: 'long',
@@ -710,6 +718,141 @@
             } finally {
                 showLoading(false);
             }
+        }
+
+        // ====================================================================
+        // FUNGSI EXPORT CSV (BARU - DIREVISI)
+        // ====================================================================
+
+        /** * Mengubah array data menjadi string CSV 
+         * DIREVISI: Menggunakan titik koma (;) sebagai pemisah kolom untuk kompatibilitas Excel Indonesia.
+         */
+        function convertToCSV(dataArray) {
+            // Menggunakan titik koma (;) sebagai pemisah kolom
+            const DELIMITER = ';'; 
+
+            // Fungsi untuk mengutip field jika mengandung delimiter, kutipan ganda, atau baris baru
+            const escapeField = (field) => {
+                if (typeof field === 'number') {
+                    // Jika berupa angka, konversi ke string dan ganti titik desimal ke koma (standar Indonesia)
+                    // Jika angka diekspor tanpa format Rupiah, ia akan menggunakan titik sebagai pemisah desimal
+                    // Kita harus pastikan format desimal Indonesia (koma) jika ada.
+                    let numStr = String(field);
+                    if (numStr.includes('.')) {
+                        // Ganti titik desimal ke koma
+                        numStr = numStr.replace('.', ','); 
+                    }
+                    return numStr; 
+                }
+                
+                let str = String(field).replace(/"/g, '""'); // Mengganti kutipan ganda dengan dua kutipan ganda
+                // Hanya mengutip field jika mengandung delimiter, kutipan ganda, atau baris baru
+                if (str.includes(DELIMITER) || str.includes('\n') || str.includes('"')) {
+                    return `"${str}"`;
+                }
+                return str;
+            };
+
+            const header = ['Tanggal', 'Keterangan', 'Pemasukan', 'Pengeluaran', 'Sisa Saldo'];
+            // Menggabungkan header menggunakan DELIMITER (titik koma)
+            let csv = header.map(escapeField).join(DELIMITER) + '\n';
+
+            dataArray.forEach(row => {
+                const values = [
+                    row.tanggal, 
+                    row.keterangan, 
+                    row.pemasukan, 
+                    row.pengeluaran, 
+                    row.saldo
+                ];
+                // Menggabungkan nilai menggunakan DELIMITER (titik koma)
+                csv += values.map(escapeField).join(DELIMITER) + '\n';
+            });
+
+            return csv;
+        }
+
+        /** * Memicu pengunduhan file CSV 
+         * DIREVISI: Menambahkan Byte Order Mark (BOM) untuk kompatibilitas UTF-8 di Excel.
+         */
+        function downloadCSV(csvString, filename) {
+            const bom = '\ufeff'; // BOM (Byte Order Mark) untuk membantu Excel mengenali UTF-8 dan pemisah (;)
+            
+            // Membuat Blob dengan BOM dan tipe text/csv;charset=utf-8
+            const blob = new Blob([bom + csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            
+            // Kompatibilitas browser
+            if (link.download !== undefined) { 
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast(`File ${filename}`, 'success'); 
+            } else {
+                showToast("Browser Anda tidak mendukung pengunduhan otomatis.", 'error');
+            }
+        }
+        
+        /** Fungsi utama untuk mengumpulkan data tabel dan mengekspornya ke CSV */
+        function exportToCSV() {
+            showLoading(true);
+            const rows = tabelDataTransaksi.querySelectorAll('tr[data-id]');
+            const dataToExport = [];
+
+            if (rows.length === 0) {
+                showToast("Tidak ada data transaksi di bulan ini untuk diekspor.", 'accent-3');
+                showLoading(false);
+                return;
+            }
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('.data-cell');
+                // Mengambil teks dari sel, mengabaikan kolom ID Transaksi (indeks 0) dan Aksi (indeks 6)
+                // cells[1] = Tanggal Indonesia (DD Bulan YYYY)
+                // cells[2] = Keterangan
+                // cells[3] = Pemasukan (Format Rupiah)
+                // cells[4] = Pengeluaran (Format Rupiah)
+                // cells[5] = Sisa Saldo (Format Rupiah)
+
+                // Fungsi lokal untuk menghapus format Rupiah dan mengembalikan angka (atau 0 jika gagal)
+                const cleanRupiah = (text) => {
+                    if (!text) return 0;
+                    // Hapus 'Rp', spasi, tanda minus, dan semua separator ribuan (titik)
+                    let cleanText = String(text).replace(/Rp\s*/g, '').replace(/\./g, '').replace(/-/g, '').trim();
+                    // Ganti koma (pemisah desimal Indonesia) menjadi titik (pemisah desimal JS/CSV)
+                    cleanText = cleanText.replace(',', '.'); 
+                    // Gunakan parseFloat untuk mendapatkan nilai numerik (bisa negatif)
+                    const num = parseFloat(cleanText.replace(/\s/g, '')) || 0;
+                    return num;
+                };
+
+                // Ambil data yang sudah diformat untuk tampilan (Tanggal, Keterangan)
+                const tanggalIndo = cells[1].textContent.trim();
+                const keterangan = cells[2].textContent.trim();
+                
+                // Konversi nilai Rupiah kembali ke angka biasa (float)
+                const pemasukanVal = cleanRupiah(cells[3].textContent.trim());
+                const pengeluaranVal = cleanRupiah(cells[4].textContent.trim());
+                const saldoVal = cleanRupiah(cells[5].textContent.trim());
+
+                dataToExport.push({
+                    tanggal: tanggalIndo, // Format Tanggal Indonesia
+                    keterangan: keterangan,
+                    pemasukan: pemasukanVal, // Nilai float/angka
+                    pengeluaran: pengeluaranVal, // Nilai float/angka
+                    saldo: saldoVal // Nilai float/angka
+                });
+            });
+
+            const csvContent = convertToCSV(dataToExport);
+            const filename = `Keuangan_Plampang2_${currentSelectedMonth}_${new Date().getFullYear()}.csv`;
+            
+            downloadCSV(csvContent, filename);
+            showLoading(false);
         }
 
         // ====================================================================
@@ -1149,8 +1292,9 @@
         window.cancelAction = cancelAction;
         window.updateData = updateData; 
         window.saveNewData = saveNewData; 
-        // Ekspos fungsi baru (opsional, tapi baik untuk debugging)
         window.formatDateToIndonesian = formatDateToIndonesian; 
+        // Expose fungsi baru untuk CSV
+        window.exportToCSV = exportToCSV; 
 
     </script>
 </body>

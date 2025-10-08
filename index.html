@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -17,30 +16,30 @@
     
     <style>
         /* ================================================= */
-        /* === Variabel dan Gaya Dasar Tema (DIADOPSI DARI TEMA.HTML) === */
+        /* === Variabel dan Gaya Dasar Tema === */
         /* ================================================= */
         :root {
             /* Warna Dasar */
-            --bg-primary: #f0f0f5; 
-            --bg-card: rgba(255, 255, 255, 0.5); 
-            --text-main: #333333; 
-            --text-subtle: #666666; 
+            --bg-primary: #f0f0f5; /* Latar Belakang Utama */
+            --bg-card: rgba(255, 255, 255, 0.5); /* Latar Belakang Kartu Glassmorphism */
+            --text-main: #333333; /* Teks Utama */
+            --text-subtle: #666666; /* Teks Sekunder/Subtil */
             --accent-1: #08978b; /* Primer/Simpan (Hijau Teal) */
             --accent-2: #ff6932; /* Hapus (Oranye) */
             --accent-3: #08978B; /* Tab Aktif/Edit/Salin (Sama dengan accent-1) */
-            --border-color: rgba(0, 0, 0, 0.1); 
+            --border-color: rgba(0, 0, 0, 0.1); /* Warna Batas */
             
-            /* Dimensi - Diperkecil (sesuai tema.html) */
-            --glass-br: 8px; 
-            --font-size-base: 0.75rem; 
-            --padding-base: 0.6em; 
+            /* Dimensi */
+            --glass-br: 8px; /* Radius Sudut Glassmorphism */
+            --font-size-base: 0.75rem; /* Ukuran Font Dasar */
+            --padding-base: 0.6em; /* Padding Dasar */
 
             /* Shadow & Warna Aksi */
-            --shadow-light: rgba(0, 0, 0, 0.1);
-            --color-delete: var(--accent-2); 
-            --color-save: var(--accent-1); 
-            --color-copy: var(--accent-3); 
-            --color-edit: var(--accent-3); 
+            --shadow-light: rgba(0, 0, 0, 0.1); /* Bayangan Ringan */
+            --color-delete: var(--accent-2); /* Warna Hapus */
+            --color-save: var(--accent-1); /* Warna Simpan */
+            --color-copy: var(--accent-3); /* Warna Salin */
+            --color-edit: var(--accent-3); /* Warna Edit */
         }
 
         /* --- Gaya Umum untuk body --- */
@@ -49,7 +48,7 @@
             background-color: var(--bg-primary);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 1em; /* Dari 1.5em */
+            padding: 1em; 
             font-size: var(--font-size-base); 
         }
         
@@ -66,7 +65,7 @@
 
         /* --- Kontainer Utama untuk batasan lebar (main-container) --- */
         .main-container {
-            max-width: 540px; /* Lebar diperkecil sesuai tema.html */
+            max-width: 540px; 
             margin-left: auto;
             margin-right: auto;
             space-y: 0.8em; 
@@ -104,7 +103,7 @@
 
         /* --- Tombol Aksi Tabel (Edit/Hapus/Simpan/Batal Inline) --- */
         .btn-table-action {
-            /* Membuat tombol lebih kecil dan merata (DIADOPSI DARI TEMA.HTML) */
+            /* Membuat tombol lebih kecil dan merata */
             font-size: 0.7rem; 
             padding: 0.3rem; 
             width: 1.6rem; 
@@ -117,17 +116,17 @@
             transition: background-color 0.2s, transform 0.2s;
         }
 
-        /* --- Gaya Input dan Select (Diambil dari input[type="text"] tema.html) --- */
+        /* --- Gaya Input dan Select --- */
         .gaya-input-theme {
             border: 1px solid var(--border-color);
             border-radius: 5px; 
             padding: 0.5rem; 
-            font-size: 0.75rem; /* Disesuaikan agar lebih kecil/padat */
+            font-size: 0.75rem; 
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             background-color: #fcfcfc;
         }
 
-        /* --- Gaya Tabel (DIADOPSI DARI TEMA.HTML) --- */
+        /* --- Gaya Tabel --- */
         .data-table thead th {
             font-family: 'JetBrains Mono', monospace;
             color: var(--text-subtle);
@@ -139,27 +138,55 @@
             z-index: 10; 
             background-color: white; 
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+            /* REVISI: Pastikan judul kolom rata tengah (atau rata kiri untuk Keterangan, sesuai HTML) */
+            text-align: center;
         }
+        
         .data-table tbody td {
             padding: 0.5rem 0.6rem; 
             font-size: 0.75rem; 
             vertical-align: middle; 
             color: var(--text-main); 
+            /* Default untuk isi sel data: Rata Kiri */
+            text-align: left;
         }
+        
+        /* --- REVISI: Pengaturan Rata Tengah/Kanan untuk Isi Kolom --- */
+        /* Kolom TANGGAL (Kolom ke-2) */
+        .data-table tbody td:nth-child(2) {
+            text-align: center; 
+        }
+        /* Kolom KETERANGAN (Kolom ke-3) - Tetap Rata Kiri */
+        .data-table tbody td:nth-child(3) {
+            text-align: left;
+        }
+        /* Kolom PEMASUKAN, PENGELUARAN, SALDO (Kolom ke-4, ke-5, ke-6) */
+        .data-table tbody td:nth-child(4),
+        .data-table tbody td:nth-child(5),
+        .data-table tbody td:nth-child(6) {
+            text-align: right; /* Rata Kanan untuk nominal uang */
+        }
+        /* Kolom AKSI (Kolom ke-7) */
+        .data-table tbody td:nth-child(7) {
+            text-align: center;
+        }
+        /* --- Akhir Revisi Pengaturan Rata Tengah/Kanan --- */
+
+
         /* Mengganti baris ganjil/genap dengan gaya default agar lebih bersih */
         .data-table tbody tr:nth-child(odd) { background-color: white; }
         .data-table tbody tr:nth-child(even) { background-color: var(--bg-primary); }
         .data-table tbody tr:hover { background-color: #e3f2fd; }
 
-        /* --- Gaya Scrollable Data (DIADOPSI DARI TEMA.HTML) --- */
+        /* --- Gaya Scrollable Data --- */
         .scrollable-data {
-            max-height: 400px; /* Disesuaikan sedikit lebih tinggi */
+            max-height: 400px; 
             overflow-y: auto; 
             border: 1px solid var(--border-color);
             border-radius: var(--glass-br);
         }
 
-        /* --- Gaya Tombol Bulan (Didasarkan pada .tab-button tema.html) --- */
+        /* --- Gaya Tombol Bulan --- */
         .btn-month-theme {
             padding: 0.4rem 0.6rem; 
             font-weight: 500; 
@@ -186,7 +213,7 @@
             color: white;
         }
 
-        /* --- Gaya Modal (DIADOPSI DARI TEMA.HTML) --- */
+        /* --- Gaya Modal --- */
         .modal {
             transition: all 0.3s ease-out;
             opacity: 0;
@@ -217,7 +244,7 @@
             background-color: #fffbe6 !important; /* Warna latar belakang tema: Kuning lembut */
         }
         
-        /* KOMENTAR: Gaya tambahan untuk menyembunyikan Kolom ID Transaksi */
+        /* Gaya tambahan untuk menyembunyikan Kolom ID Transaksi */
         .hidden-ts-col {
             display: none;
         }
@@ -300,13 +327,13 @@
                 <table class="min-w-full data-table border-collapse">
                     <thead class="sticky top-0 z-10">
                         <tr>
-                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider hidden-ts-col">ID TRANSAKSI (TS)</th> 
-                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">TANGGAL</th>
-                            <th class="px-6 py-2 text-left text-xs uppercase tracking-wider">KETERANGAN</th>
-                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">PEMASUKAN</th>
-                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">PENGELUARAN</th>
-                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">SISA SALDO</th>
-                            <th class="px-3 py-2 text-left text-xs uppercase tracking-wider">AKSI</th> 
+                            <th class="px-3 py-2 text-xs uppercase tracking-wider hidden-ts-col">ID TRANSAKSI (TS)</th> 
+                            <th class="px-3 py-2 text-center text-xs uppercase tracking-wider">TANGGAL</th>
+                            <th class="px-6 py-2 text-center text-xs uppercase tracking-wider">KETERANGAN</th> 
+                            <th class="px-3 py-2 text-center text-xs uppercase tracking-wider">PEMASUKAN</th>
+                            <th class="px-3 py-2 text-center text-xs uppercase tracking-wider">PENGELUARAN</th>
+                            <th class="px-3 py-2 text-center text-xs uppercase tracking-wider">SALDO</th>
+                            <th class="px-3 py-2 text-center text-xs uppercase tracking-wider">AKSI</th> 
                         </tr>
                     </thead>
                     <tbody id="tabelDataTransaksi" class="divide-y divide-[var(--border-color)]">
@@ -391,36 +418,36 @@
         ];
         
         // VARIABEL STATUS ADMINISTRATOR
-        const ADMIN_PASSWORD = "dataplp2";
-        let isAdmin = false;
+        const ADMIN_PASSWORD = "dataplp2"; // Password Admin
+        let isAdmin = false; // Status mode Admin
         let pendingAction = null; // Menyimpan fungsi yang akan dijalankan setelah autentikasi
 
         // Variabel Status Aplikasi
-        let isEditing = false;
-        let isAddingNew = false;
-        let originalRowContent = null; 
-        let currentSelectedMonth = MONTH_DATA[new Date().getMonth()].full; 
-        let transactionIdToDelete = null; 
+        let isEditing = false; // Status apakah sedang dalam mode edit
+        let isAddingNew = false; // Status apakah sedang dalam mode tambah baru
+        let originalRowContent = null; // Menyimpan konten baris asli saat edit
+        let currentSelectedMonth = MONTH_DATA[new Date().getMonth()].full; // Bulan yang saat ini dipilih
+        let transactionIdToDelete = null; // ID transaksi yang akan dihapus
         let finalBalanceValue = 0; // Nilai Saldo Akhir Bulan (diperbarui di fetchData)
         
         // Referensi DOM
-        const filterBulanContainer = document.getElementById('filterBulanContainer'); 
-        const tabelDataTransaksi = document.getElementById('tabelDataTransaksi');     
-        const lapisanMemuat = document.getElementById('lapisanMemuat');             
-        const akhirSaldoEl = document.getElementById('akhirSaldo');                 
-        const tombolTambahBaru = document.getElementById('tombolTambahBaru');         
-        const wadahToast = document.getElementById('wadahToast');                     
-        const modalHapus = document.getElementById('modalHapus');
-        const tombolKonfirmasiHapus = document.getElementById('tombolKonfirmasiHapus');
-        const tombolBatalHapus = document.getElementById('tombolBatalHapus');
+        const filterBulanContainer = document.getElementById('filterBulanContainer'); // Kontainer tombol bulan
+        const tabelDataTransaksi = document.getElementById('tabelDataTransaksi');     // Body tabel transaksi
+        const lapisanMemuat = document.getElementById('lapisanMemuat');             // Modal loading
+        const akhirSaldoEl = document.getElementById('akhirSaldo');                 // Elemen saldo akhir
+        const tombolTambahBaru = document.getElementById('tombolTambahBaru');         // Tombol tambah baru
+        const wadahToast = document.getElementById('wadahToast');                     // Wadah notifikasi toast
+        const modalHapus = document.getElementById('modalHapus');                     // Modal konfirmasi hapus
+        const tombolKonfirmasiHapus = document.getElementById('tombolKonfirmasiHapus'); // Tombol konfirmasi hapus di modal
+        const tombolBatalHapus = document.getElementById('tombolBatalHapus');           // Tombol batal hapus di modal
         // DOM Admin
-        const modalAdmin = document.getElementById('modalAdmin');
-        const adminPasswordInput = document.getElementById('adminPasswordInput');
-        const passwordError = document.getElementById('passwordError');
-        const adminStatusEl = document.getElementById('adminStatus');
-        const toggleAdminBtn = document.getElementById('toggleAdminBtn');
+        const modalAdmin = document.getElementById('modalAdmin');                     // Modal admin
+        const adminPasswordInput = document.getElementById('adminPasswordInput');     // Input password admin
+        const passwordError = document.getElementById('passwordError');               // Pesan error password
+        const adminStatusEl = document.getElementById('adminStatus');                 // Teks status admin
+        const toggleAdminBtn = document.getElementById('toggleAdminBtn');             // Tombol toggle admin
         // DOM Tambahan untuk Export CSV
-        const tombolSimpanCsv = document.getElementById('tombolSimpanCsv'); 
+        const tombolSimpanCsv = document.getElementById('tombolSimpanCsv');         // Tombol export CSV
 
 
         // ====================================================================
@@ -546,27 +573,28 @@
                 mode: 'cors'
             };
 
-            const MAX_RETRIES = 3;
+            const MAX_RETRIES = 3; // Jumlah maksimum percobaan ulang
             for (let i = 0; i < MAX_RETRIES; i++) {
                 try {
                     if (method === 'POST') {
                         const formData = new FormData();
                         for (const key in data) {
-                            // Convert number to string for FormData (penting untuk sisa_saldo)
+                            // Convert number to string for FormData
                             formData.append(key, typeof data[key] === 'number' ? String(data[key]) : data[key]);
                         }
                         options.body = formData;
                     } else {
+                        // Jika GET, tambahkan data sebagai parameter URL
                         const params = new URLSearchParams(data);
                         url = `${GOOGLE_APPS_SCRIPT_URL}?${params.toString()}`;
                     }
 
                     const response = await fetch(url, options);
 
-                    if (response.status === 429) {
+                    if (response.status === 429) { // Too Many Requests
                         if (i < MAX_RETRIES - 1) {
                             const delay = Math.pow(2, i) * 1000;
-                            await new Promise(resolve => setTimeout(resolve, delay));
+                            await new Promise(resolve => setTimeout(resolve, delay)); // Eksponensial backoff
                             continue;
                         } else {
                             throw new Error(`Batas percobaan habis. Server terlalu sibuk.`);
@@ -600,6 +628,7 @@
             let bgColor;
             let icon;
 
+            // Tentukan warna dan ikon berdasarkan tipe
             if (type === 'success') {
                 bgColor = 'bg-[var(--accent-1)]';
                 icon = 'fa-check-circle';
@@ -642,7 +671,7 @@
 
         /** Format angka menjadi format Rupiah */
         function formatRupiah(angka) {
-            // Perbaikan: Jika angka negatif, pastikan tanda minus ikut
+            // Jika angka negatif, pastikan tanda minus ikut
             if (typeof angka !== 'number') return 'Rp 0';
             const sign = angka < 0 ? '-' : '';
             const absoluteAngka = Math.abs(angka);
@@ -693,17 +722,17 @@
         }
 
 
-        /** Mengambil data dari Apps Script (DIPERBAIKI untuk mengambil initialBalance) */
+        /** Mengambil data dari Apps Script */
         async function fetchData() {
             if (isEditing || isAddingNew) return; // Jangan fetch saat sedang edit/tambah
 
             showLoading(true);
             try {
-                // Diperlukan asumsi bahwa Apps Script akan mengembalikan initialBalance (saldo awal bulan)
+                // Asumsi Apps Script akan mengembalikan initialBalance (saldo awal bulan)
                 const result = await postToGS({ action: 'READ_DATA', month: currentSelectedMonth }, 'GET');
                 
-                // --- PERBAIKAN FOKUS: Ambil Saldo Awal ---
-                const initialBalance = result.initialBalance || 0; // Asumsi server menyediakan initialBalance
+                // Ambil Saldo Awal
+                const initialBalance = result.initialBalance || 0; 
                 
                 // Lanjutkan ke render tabel dengan saldo awal
                 renderTable(result.data || [], initialBalance);
@@ -721,22 +750,18 @@
         }
 
         // ====================================================================
-        // FUNGSI EXPORT CSV (BARU - DIREVISI)
+        // FUNGSI EXPORT CSV
         // ====================================================================
 
-        /** * Mengubah array data menjadi string CSV 
-         * DIREVISI: Menggunakan titik koma (;) sebagai pemisah kolom untuk kompatibilitas Excel Indonesia.
-         */
+        /** Mengubah array data menjadi string CSV */
         function convertToCSV(dataArray) {
-            // Menggunakan titik koma (;) sebagai pemisah kolom
+            // Menggunakan titik koma (;) sebagai pemisah kolom untuk kompatibilitas Excel Indonesia
             const DELIMITER = ';'; 
 
             // Fungsi untuk mengutip field jika mengandung delimiter, kutipan ganda, atau baris baru
             const escapeField = (field) => {
                 if (typeof field === 'number') {
                     // Jika berupa angka, konversi ke string dan ganti titik desimal ke koma (standar Indonesia)
-                    // Jika angka diekspor tanpa format Rupiah, ia akan menggunakan titik sebagai pemisah desimal
-                    // Kita harus pastikan format desimal Indonesia (koma) jika ada.
                     let numStr = String(field);
                     if (numStr.includes('.')) {
                         // Ganti titik desimal ke koma
@@ -772,9 +797,7 @@
             return csv;
         }
 
-        /** * Memicu pengunduhan file CSV 
-         * DIREVISI: Menambahkan Byte Order Mark (BOM) untuk kompatibilitas UTF-8 di Excel.
-         */
+        /** Memicu pengunduhan file CSV */
         function downloadCSV(csvString, filename) {
             const bom = '\ufeff'; // BOM (Byte Order Mark) untuk membantu Excel mengenali UTF-8 dan pemisah (;)
             
@@ -811,7 +834,6 @@
 
             rows.forEach(row => {
                 const cells = row.querySelectorAll('.data-cell');
-                // Mengambil teks dari sel, mengabaikan kolom ID Transaksi (indeks 0) dan Aksi (indeks 6)
                 // cells[1] = Tanggal Indonesia (DD Bulan YYYY)
                 // cells[2] = Keterangan
                 // cells[3] = Pemasukan (Format Rupiah)
@@ -856,7 +878,7 @@
         }
 
         // ====================================================================
-        // FUNGSI TAMPILAN & INPUT (DIUBAH UNTUK PERBAIKAN)
+        // FUNGSI TAMPILAN & INPUT
         // ====================================================================
 
         /** Membuat elemen tombol filter bulan */
@@ -887,7 +909,7 @@
             fetchData();
         }
 
-        /** Render data ke tabel HTML (DIPERBAIKI untuk menampilkan tanggal format Indonesia) */
+        /** Render data ke tabel HTML */
         function renderTable(data, initialBalance) {
             tabelDataTransaksi.innerHTML = ''; // Kosongkan tabel
             
@@ -903,28 +925,30 @@
 
             data.forEach(rowData => {
                 // Skema data: [id, tanggal, keterangan, pemasukan, pengeluaran]
-                // Kolom saldo (indeks 5) dari data lama diabaikan karena akan dihitung ulang
                 const [id, tanggalYMD, keterangan, pemasukanText, pengeluaranText] = rowData;
                 
                 // Pastikan nilai Pemasukan/Pengeluaran adalah angka
                 const pemasukan = parseFloat(pemasukanText) || 0;
                 const pengeluaran = parseFloat(pengeluaranText) || 0;
 
-                // --- PERBAIKAN FOKUS: Hitung Saldo Baris ---
+                // Hitung Saldo Baris
                 currentBalance = currentBalance + pemasukan - pengeluaran;
 
-                // --- PERBAIKAN FOKUS: Format Tanggal untuk Tampilan ---
+                // Format Tanggal untuk Tampilan
                 const formattedDate = formatDateToIndonesian(tanggalYMD);
 
                 const newRow = document.createElement('tr');
                 newRow.setAttribute('data-id', id);
+                
+                // Perhatikan: Penataan rata kanan/tengah/kiri sudah diatur di bagian CSS <style> di atas
                 newRow.innerHTML = `
                     <td class="data-cell p-1 hidden-ts-col">${id}</td>
-                    <td class="data-cell p-1">${formattedDate}</td> <td class="data-cell p-1">${keterangan}</td>
-                    <td class="data-cell p-1 text-right text-[var(--accent-1)] font-['JetBrains_Mono',_monospace]">${formatRupiah(pemasukan)}</td>
-                    <td class="data-cell p-1 text-right text-[var(--accent-2)] font-['JetBrains_Mono',_monospace]">${formatRupiah(pengeluaran)}</td>
-                    <td class="data-cell p-1 text-right font-bold font-['JetBrains_Mono',_monospace]">${formatRupiah(currentBalance)}</td>
-                    <td class="data-cell p-1 text-center whitespace-nowrap">
+                    <td class="data-cell p-1">${formattedDate}</td> 
+                    <td class="data-cell p-1">${keterangan}</td> 
+                    <td class="data-cell p-1 text-[var(--accent-1)] font-['JetBrains_Mono',_monospace]">${formatRupiah(pemasukan)}</td>
+                    <td class="data-cell p-1 text-[var(--accent-2)] font-['JetBrains_Mono',_monospace]">${formatRupiah(pengeluaran)}</td>
+                    <td class="data-cell p-1 font-bold font-['JetBrains_Mono',_monospace]">${formatRupiah(currentBalance)}</td>
+                    <td class="data-cell p-1 whitespace-nowrap">
                         <button onclick="checkAdminStatus(startEdit, '${id}')" class="btn-table-action bg-[var(--color-edit)] hover:bg-[#077d73] mr-1 locked-action" title="Aktifkan Mode Admin untuk Edit">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -936,7 +960,7 @@
                 tabelDataTransaksi.appendChild(newRow);
             });
             
-            // --- PERBAIKAN FOKUS: Simpan Saldo Akhir ---
+            // Simpan Saldo Akhir
             finalBalanceValue = currentBalance; 
 
             // Pastikan UI admin diperbarui setelah render
@@ -947,10 +971,8 @@
         function createInputRow(rowData = null) {
             const isEdit = rowData !== null;
             
-            // Jika edit, ambil data dari rowData: [timestamp, tanggal, keterangan, pemasukan, pengeluaran, id]
-            // Jika tambah baru, gunakan nilai default
+            // Data rowData: [timestamp, tanggalYMD, keterangan, pemasukan, pengeluaran, id]
             const id = isEdit ? rowData[5] : new Date().getTime(); 
-            // Tanggal input selalu format YYYY-MM-DD
             const tanggalVal = isEdit ? rowData[1] : new Date().toISOString().substring(0, 10); 
             const keteranganVal = isEdit ? rowData[2] : '';
             const pemasukanVal = isEdit ? rowData[3] : '';
@@ -965,7 +987,7 @@
             inputRow.innerHTML = `
                 <td class="data-cell p-1 hidden-ts-col">${id}</td>
                 <td class="data-cell p-1">
-                    <input type="date" value="${tanggalVal}" class="gaya-input-theme w-full" id="inputTanggal${id}" required>
+                    <input type="date" value="${tanggalVal}" class="gaya-input-theme w-full text-center" id="inputTanggal${id}" required>
                 </td>
                 <td class="data-cell p-1">
                     <input type="text" value="${keteranganVal}" placeholder="Keterangan transaksi..." class="gaya-input-theme w-full" id="inputKeterangan${id}" required>
@@ -976,7 +998,7 @@
                 <td class="data-cell p-1">
                     <input type="number" value="${pengeluaranVal}" placeholder="0" class="gaya-input-theme w-full text-right" id="inputPengeluaran${id}" min="0">
                 </td>
-                <td class="data-cell p-1 font-bold text-center">
+                <td class="data-cell p-1 font-bold text-right">
                     -
                 </td>
                 <td class="data-cell p-1 text-center whitespace-nowrap">
@@ -992,7 +1014,7 @@
             return inputRow;
         }
 
-        /** Mengganti baris tabel dengan form input saat Edit (DIPERBAIKI untuk parsing tanggal) */
+        /** Mengganti baris tabel dengan form input saat Edit */
         function startEdit(id) {
             if (isEditing || isAddingNew) {
                 showToast("Selesaikan aksi yang sedang berlangsung terlebih dahulu.", 'accent-3');
@@ -1015,7 +1037,7 @@
             const pengeluaranText = cells[4].textContent.trim(); // Format Rupiah
             
             // FUNGSI UTILITY LOKAL
-            // --- PERBAIKAN FOKUS: Parsing balik tanggal dari DD Bulan YYYY ke YYYY-MM-DD ---
+            // Parsing balik tanggal dari DD Bulan YYYY ke YYYY-MM-DD
             const convertIndoToYMD = (indoDate) => {
                 try {
                     // Coba buat objek Date dengan format ID
@@ -1044,12 +1066,10 @@
                 return isNaN(num) ? '' : num;
             };
             
-            // Data yang akan dikirim ke createInputRow
-            // --- PERBAIKAN FOKUS: Gunakan fungsi konversi balik tanggal ---
+            // Gunakan fungsi konversi balik tanggal
             const tanggalInput = convertIndoToYMD(tanggalIndo); // YYYY-MM-DD format untuk input type="date"
 
-            // Perhatikan bahwa data ke-5 (saldo) diabaikan dari data edit, 
-            // karena tidak digunakan dalam form input.
+            // Data yang akan dikirim ke createInputRow
             const rowDataForEdit = [
                 timestamp, 
                 tanggalInput, 
@@ -1144,7 +1164,7 @@
                 tanggal: tanggal, // Tanggal dikirim dalam format YYYY-MM-DD
                 pemasukan: parseFloat(pemasukan) || 0,
                 pengeluaran: parseFloat(pengeluaran) || 0,
-                keterangan: keterangan, // Keterangan dipindah ke akhir
+                keterangan: keterangan, 
             };
         }
 
@@ -1175,7 +1195,7 @@
                 tanggal: tanggal, // Tanggal dikirim dalam format YYYY-MM-DD
                 pemasukan: parseFloat(pemasukan) || 0,
                 pengeluaran: parseFloat(pengeluaran) || 0,
-                keterangan: keterangan, // Keterangan dipindah ke akhir
+                keterangan: keterangan, 
             };
         }
 
@@ -1299,4 +1319,3 @@
     </script>
 </body>
 </html>
-

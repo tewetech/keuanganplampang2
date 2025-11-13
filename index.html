@@ -4,7 +4,7 @@
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/keuanganplampang2/refs/heads/main/favicon-uang.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catatan Keuangan Plampang 2</title>
+    <title>Keuangan Mekar Plampang 2</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -31,7 +31,7 @@
             
             /* Dimensi */
             --glass-br: 8px; /* Radius Sudut Glassmorphism */
-            --font-size-base: 0.75rem; /* Ukuran Font Dasar */
+            --font-size-base: 0.75rem; /* Ukuran Font Dasar (text-xs) */
             --padding-base: 0.6em; /* Padding Dasar */
 
             /* Shadow & Warna Aksi */
@@ -49,7 +49,7 @@
             color: var(--text-main);
             min-height: 100vh;
             padding: 1em; 
-            font-size: var(--font-size-base); 
+            font-size: var(--font-size-base); /* Ukuran Font Dasar: 0.75rem (text-xs) */
         }
         
         /* --- Kontainer utama (glass-card) --- */
@@ -121,7 +121,7 @@
             border: 1px solid var(--border-color);
             border-radius: 5px; 
             padding: 0.5rem; 
-            font-size: 0.75rem; 
+            font-size: 0.75rem; /* text-xs */
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             background-color: #fcfcfc;
         }
@@ -131,7 +131,7 @@
             font-family: 'JetBrains Mono', monospace;
             color: var(--text-subtle);
             font-weight: 600;
-            font-size: 0.7rem; 
+            font-size: 0.7rem; /* Ukuran font header tabel */
             padding: 0.5rem 0.6rem; 
             position: sticky; 
             top: 0; 
@@ -144,7 +144,7 @@
         
         .data-table tbody td {
             padding: 0.5rem 0.6rem; 
-            font-size: 0.75rem; 
+            font-size: 0.75rem; /* Ukuran font isi sel tabel (text-xs) */
             vertical-align: middle; 
             color: var(--text-main); 
             /* Default untuk isi sel data: Rata Kiri */
@@ -152,6 +152,10 @@
         }
         
         /* --- REVISI: Pengaturan Rata Tengah/Kanan untuk Isi Kolom --- */
+        /* Kolom ID (Kolom ke-1) - Hidden */
+        .data-table tbody td:nth-child(1) {
+            display: none;
+        }
         /* Kolom TANGGAL (Kolom ke-2) */
         .data-table tbody td:nth-child(2) {
             text-align: center; 
@@ -192,7 +196,7 @@
             font-weight: 500; 
             border-radius: 5px; 
             color: var(--text-subtle);
-            font-size: 0.75rem; 
+            font-size: 0.75rem; /* text-xs */
             transition: all 0.2s ease;
             background-color: #e0e0e0; 
             border: 1px solid var(--border-color);
@@ -262,12 +266,13 @@
 <body>
 
     <div class="main-container mx-auto p-4 space-y-4"> 
+        
         <header class="text-center mb-6">
             <h1 class="text-2xl md:text-3xl font-extrabold text-[var(--accent-1)]">
-                <i class="fas fa-chart-line mr-2"></i> KEUANGAN 2025
+                <i class="fas fa-chart-line mr-2"></i> KEUANGAN MEKAR
             </h1>
             <p class="text-[var(--text-subtle)] mt-1 font-['JetBrains_Mono',_monospace] text-xs">
-                Keuangan Pemuda Plampang 2 | By Tewe Tech
+                Keuangan Mekar Plampang 2 | By Tewe Tech
             </p>
         </header>
 
@@ -282,8 +287,8 @@
 
         <div class="glass-card p-4 mb-4">
             <div class="mb-4">
-                <p class="text-sm font-bold text-[var(--text-main)] mb-2">
-                    <i class="fas fa-calendar-check mr-2"></i> Pilih Bulan:
+                <p class="text-sm text-[var(--text-main)] mb-2 font-semibold">
+                    <i class="fas fa-calendar-check mr-2"></i> Pilih Bulan :
                 </p>
                 <div id="filterBulanContainer" class="grid grid-cols-6 sm:grid-cols-12 gap-1.5">
                     </div>
@@ -298,8 +303,8 @@
         <div class="glass-card p-4 overflow-x-auto relative">
             
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg md:text-xl font-semibold text-[var(--text-main)]">
-                    <i class="fas fa-receipt mr-2"></i> Rincian Transaksi
+                <h2 class="text-sm md:text-md text-[var(--text-main)] font-semibold">
+                    <i class="fas fa-receipt mr-2"></i> Rincian Transaksi :
                 </h2>
                 <div class="flex space-x-2">
                     <button 
@@ -579,7 +584,7 @@
                     if (method === 'POST') {
                         const formData = new FormData();
                         for (const key in data) {
-                            // Convert number to string for FormData
+                            // Konversi angka ke string untuk FormData
                             formData.append(key, typeof data[key] === 'number' ? String(data[key]) : data[key]);
                         }
                         options.body = formData;
@@ -591,7 +596,7 @@
 
                     const response = await fetch(url, options);
 
-                    if (response.status === 429) { // Too Many Requests
+                    if (response.status === 429) { // Terlalu Banyak Permintaan
                         if (i < MAX_RETRIES - 1) {
                             const delay = Math.pow(2, i) * 1000;
                             await new Promise(resolve => setTimeout(resolve, delay)); // Eksponensial backoff
@@ -814,7 +819,7 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                showToast(`File ${filename}`, 'success'); 
+                showToast(`File ${filename} berhasil diunduh.`, 'success'); 
             } else {
                 showToast("Browser Anda tidak mendukung pengunduhan otomatis.", 'error');
             }
